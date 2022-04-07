@@ -16,6 +16,7 @@ import uz.pdp.market.service.AbstractService;
 import uz.pdp.market.service.GenericCrudService;
 import uz.pdp.market.utils.validator.currency.CurrencyValidator;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -29,6 +30,7 @@ public class CurrencyService extends AbstractService<CurrencyRepository, Currenc
     @Override
     public ResponseEntity<DataDto<Long>> create(CurrencyCreateDto createDto) {
         Currency currency = mapper.fromCreateDto(createDto);
+        currency.setCreatedAt(LocalDateTime.now());
         repository.save(currency);
         return new ResponseEntity<>(new DataDto<>(true), HttpStatus.CREATED);
     }
@@ -59,6 +61,7 @@ public class CurrencyService extends AbstractService<CurrencyRepository, Currenc
         }
 
         Currency currency = mapper.fromUpdateDto(updateDto, categoryOptional.get());
+        currency.setUpdatedAt(LocalDateTime.now());
         repository.save(currency);
         return new ResponseEntity<>(new DataDto<>(true), HttpStatus.ACCEPTED);
     }

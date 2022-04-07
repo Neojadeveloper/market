@@ -18,12 +18,10 @@ public class IncomeUpdateDto extends GenericDto {
 
     private double amount;
 
-    private Long measurementId;
+    private String measurementId;
 
     private Double price;
 
-    private Long currencyId;
-
-    private LocalDateTime date;
+    private String currencyId;
 
 }

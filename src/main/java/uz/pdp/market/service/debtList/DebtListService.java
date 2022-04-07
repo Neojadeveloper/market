@@ -9,7 +9,10 @@ import uz.pdp.market.dto.debtList.DebtListDto;
 import uz.pdp.market.dto.debtList.DebtListUpdateDto;
 import uz.pdp.market.dto.response.AppErrorDto;
 import uz.pdp.market.dto.response.DataDto;
+import uz.pdp.market.entity.auth.AuthUser;
+import uz.pdp.market.entity.market.Currency;
 import uz.pdp.market.entity.market.DebtList;
+import uz.pdp.market.entity.market.Measurement;
 import uz.pdp.market.mapper.DebtListMapper;
 import uz.pdp.market.repository.DebtListRepository;
 import uz.pdp.market.service.AbstractService;
@@ -28,7 +31,22 @@ public class DebtListService extends AbstractService<DebtListRepository, DebtLis
 
     @Override
     public ResponseEntity<DataDto<Long>> create(DebtListCreateDto createDto) {
+
+        Currency currency = new Currency();
+        AuthUser authUser = new AuthUser();
+        Measurement measurement = new Measurement();
+
         DebtList debtList = mapper.fromCreateDto(createDto);
+
+        currency.setId(Long.valueOf(createDto.getCurrencyId()));
+        debtList.setCurrency(currency);
+
+        authUser.setId(Long.valueOf(createDto.getLenderId()));
+        debtList.setLender(authUser);
+
+        measurement.setId(Long.valueOf(createDto.getMeasurementId()));
+        debtList.setMeasurement(measurement);
+        debtList.setGetDate(createDto.getGetDate());
         repository.save(debtList);
         return new ResponseEntity<>(new DataDto<>(true), HttpStatus.CREATED);
     }
@@ -58,6 +76,22 @@ public class DebtListService extends AbstractService<DebtListRepository, DebtLis
             ), HttpStatus.CONFLICT);
         }
         DebtList debtList = mapper.fromUpdateDto(updateDto, debtListOptional.get());
+
+
+        Currency currency = new Currency();
+        AuthUser authUser = new AuthUser();
+        Measurement measurement = new Measurement();
+
+        currency.setId(Long.valueOf(updateDto.getCurrencyId()));
+        debtList.setCurrency(currency);
+
+        authUser.setId(Long.valueOf(updateDto.getLenderId()));
+        debtList.setLender(authUser);
+
+        measurement.setId(Long.valueOf(updateDto.getMeasurementId()));
+        debtList.setMeasurement(measurement);
+        debtList.setGetDate(updateDto.getGetDate());
+
         repository.save(debtList);
         return new ResponseEntity<>(new DataDto<>(true), HttpStatus.ACCEPTED);
     }

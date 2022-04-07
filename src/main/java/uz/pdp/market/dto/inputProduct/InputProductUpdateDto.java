@@ -2,7 +2,7 @@ package uz.pdp.market.dto.inputProduct;
 
 import lombok.*;
 import uz.pdp.market.dto.base.GenericDto;
-import uz.pdp.market.entity.market.Product;
+import uz.pdp.market.entity.market.Category;
 
 import java.util.Date;
 
@@ -13,7 +13,12 @@ import java.util.Date;
 @Builder
 public class InputProductUpdateDto extends GenericDto {
 
-    private Product product;
+    private String name;
+
+    private String imgPath;
+
+    private Category category;
+
 
     private double amount;
 

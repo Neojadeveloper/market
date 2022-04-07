@@ -9,7 +9,7 @@ import java.util.List;
  * @param <UD> Update Dto
  */
 
-public interface BaseMapper<E, D, CD, UD> extends Mapper {
+public interface BaseMapper<E, D, CD, UD> extends Mapper ,BaseMapperI{
     D toDto(E e);
 
     List<D> toDto(List<E> e);

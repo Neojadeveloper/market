@@ -7,7 +7,7 @@ import uz.pdp.market.entity.auth.AuthUser;
 
 @Mapper(componentModel = "spring")
 @Component
-public interface AuthUserMapper extends uz.pdp.market.mapper.Mapper {
+public interface AuthUserMapper extends uz.pdp.market.mapper.Mapper, BaseMapperI {
 
     AuthUserDto toDto(AuthUser user);
 }

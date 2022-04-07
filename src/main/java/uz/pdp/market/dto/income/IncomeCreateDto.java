@@ -2,12 +2,7 @@ package uz.pdp.market.dto.income;
 
 import lombok.*;
 import uz.pdp.market.dto.base.Dto;
-import uz.pdp.market.entity.market.Currency;
-import uz.pdp.market.entity.market.Measurement;
 
-import javax.persistence.Column;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import java.time.LocalDateTime;
 
 @Getter
@@ -29,5 +24,4 @@ public class IncomeCreateDto implements Dto {
 
     private String currencyId;
 
-    private LocalDateTime date;
 }

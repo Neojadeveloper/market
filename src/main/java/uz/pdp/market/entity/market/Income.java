@@ -5,7 +5,6 @@ import uz.pdp.market.entity.Auditable;
 import uz.pdp.market.entity.BaseEntity;
 
 import javax.persistence.*;
-import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -35,7 +34,5 @@ public class Income extends Auditable implements BaseEntity {
     @ManyToOne
     @JoinColumn(name = "currency_id", referencedColumnName = "id")
     private Currency currency;
-
-    private LocalDateTime date;
 
 }

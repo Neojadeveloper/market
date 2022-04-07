@@ -2,10 +2,7 @@ package uz.pdp.market.dto.inputProduct;
 
 import lombok.*;
 import uz.pdp.market.dto.base.Dto;
-import uz.pdp.market.entity.market.Currency;
-import uz.pdp.market.entity.market.Market;
-import uz.pdp.market.entity.market.Measurement;
-import uz.pdp.market.entity.market.Product;
+import uz.pdp.market.entity.market.Category;
 
 import java.util.Date;
 
@@ -16,7 +13,11 @@ import java.util.Date;
 @Builder
 public class InputProductCreateDto implements Dto {
 
-    private Product product;
+    private String name;
+
+    private String imgPath;
+
+    private Category category;
 
     private double amount;
 

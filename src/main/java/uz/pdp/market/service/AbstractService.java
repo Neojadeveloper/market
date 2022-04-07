@@ -1,12 +1,12 @@
 package uz.pdp.market.service;
 
-import uz.pdp.market.mapper.Mapper;
+import uz.pdp.market.mapper.BaseMapperI;
 import uz.pdp.market.repository.AbstractRepository;
 import uz.pdp.market.utils.validator.Validator;
 
 public abstract class AbstractService<
         R extends AbstractRepository,
-        M extends Mapper,
+        M extends BaseMapperI,
         V extends Validator> {
 
     protected final R repository;

@@ -12,11 +12,6 @@ import javax.persistence.*;
 @AllArgsConstructor
 @Getter
 @Setter
-@MappedSuperclass
-@EntityListeners(AuditingEntityListener.class)
 public abstract class GenericDto implements Dto {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(unique = true)
     protected Long id;
 }

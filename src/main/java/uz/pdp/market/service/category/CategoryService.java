@@ -16,6 +16,7 @@ import uz.pdp.market.service.AbstractService;
 import uz.pdp.market.service.GenericCrudService;
 import uz.pdp.market.utils.validator.category.CategoryValidator;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -29,6 +30,7 @@ public class CategoryService extends AbstractService<CategoryRepository, Categor
     @Override
     public ResponseEntity<DataDto<Long>> create(CategoryCreateDto createDto) {
         Category category = mapper.fromCreateDto(createDto);
+        category.setCreatedAt(LocalDateTime.now());
         repository.save(category);
         return new ResponseEntity<>(new DataDto<>(true), HttpStatus.CREATED);
     }
@@ -59,6 +61,7 @@ public class CategoryService extends AbstractService<CategoryRepository, Categor
         }
 
         Category category = mapper.fromUpdateDto(updateDto, categoryOptional.get());
+        category.setUpdatedAt(LocalDateTime.now());
         repository.save(category);
         return new ResponseEntity<>(new DataDto<>(true), HttpStatus.ACCEPTED);
     }

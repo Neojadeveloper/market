@@ -24,6 +24,4 @@ public class IncomeDto extends GenericDto {
 
     private Long currencyId;
 
-    private LocalDateTime date;
-
 }

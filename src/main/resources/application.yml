@@ -1,6 +1,6 @@
 spring:
   datasource:
-    password: 2000
+    password: neo
     username: postgres
     url: jdbc:postgresql://localhost:5432/market?currentSchemaName=market
     driver-class-name: org.postgresql.Driver

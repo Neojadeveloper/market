@@ -16,9 +16,15 @@ import java.util.Date;
 @Table(name = "input_product", schema = "market")
 public class InputProduct extends Auditable implements BaseEntity {
 
+    @Column(length = 20)
+    private String name;
+
+    @Column(length = 50)
+    private String imgPath;
+
     @ManyToOne
-    @JoinColumn(name = "product_id", referencedColumnName = "id")
-    private Product product;
+    @JoinColumn(name = "category_id", referencedColumnName = "id")
+    private Category category;
 
     @Column(nullable = false)
     private double amount;
