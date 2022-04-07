@@ -7,9 +7,9 @@ import uz.pdp.market.criteria.GenericCriteria;
 import uz.pdp.market.dto.inputProduct.InputProductCreateDto;
 import uz.pdp.market.dto.inputProduct.InputProductDto;
 import uz.pdp.market.dto.inputProduct.InputProductUpdateDto;
-import uz.pdp.market.dto.response.AppErrorDto;
 import uz.pdp.market.dto.response.DataDto;
 import uz.pdp.market.entity.market.InputProduct;
+import uz.pdp.market.exception.exceptions.NotFoundException;
 import uz.pdp.market.mapper.InputProductMapper;
 import uz.pdp.market.repository.InputProductRepository;
 import uz.pdp.market.service.AbstractService;
@@ -41,11 +41,7 @@ public class InputProductService extends AbstractService<InputProductRepository,
     public ResponseEntity<DataDto<Boolean>> delete(Long id) {
         Optional<InputProduct> optionalInputProduct = repository.findByIdAndDeletedFalse(id);
         if (optionalInputProduct.isEmpty()) {
-            return new ResponseEntity<>(new DataDto<>(AppErrorDto
-                    .builder()
-                    .status(HttpStatus.NOT_FOUND)
-                    .build()
-            ), HttpStatus.NOT_FOUND);
+            throw new NotFoundException("Not found");
         }
         return new ResponseEntity<>(new DataDto<>(true), HttpStatus.NO_CONTENT);
     }
@@ -54,12 +50,7 @@ public class InputProductService extends AbstractService<InputProductRepository,
     public ResponseEntity<DataDto<Boolean>> update(InputProductUpdateDto updateDto) {
         Optional<InputProduct> inputProductOptional = repository.findByIdAndDeletedFalse(updateDto.getId());
         if (inputProductOptional.isEmpty()) {
-            return new ResponseEntity<>(new DataDto<>(AppErrorDto
-                    .builder()
-                    .status(HttpStatus.NOT_FOUND)
-                    .message("InputProduct not found by id : '%s'".formatted(updateDto.getId()))
-                    .build()
-            ), HttpStatus.CONFLICT);
+            throw new NotFoundException("InputProduct not found by id : '%s'".formatted(updateDto.getId()));
         }
         InputProduct inputProduct = mapper.fromUpdateDto(updateDto, inputProductOptional.get());
         repository.save(inputProduct);
@@ -76,7 +67,7 @@ public class InputProductService extends AbstractService<InputProductRepository,
     public ResponseEntity<DataDto<InputProductDto>> get(Long id) {
         Optional<InputProduct> inputProductOptional = repository.findByIdAndDeletedFalse(id);
         if (inputProductOptional.isEmpty())
-            return new ResponseEntity<>(new DataDto<>(AppErrorDto.builder().build()), HttpStatus.NOT_FOUND);
+            throw new NotFoundException("Not found");
 
         return new ResponseEntity<>(new DataDto<>(mapper.toDto(inputProductOptional.get())), HttpStatus.OK);
     }

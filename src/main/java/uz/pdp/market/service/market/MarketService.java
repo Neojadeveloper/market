@@ -7,9 +7,9 @@ import uz.pdp.market.criteria.GenericCriteria;
 import uz.pdp.market.dto.market.MarketCreateDto;
 import uz.pdp.market.dto.market.MarketDto;
 import uz.pdp.market.dto.market.MarketUpdateDto;
-import uz.pdp.market.dto.response.AppErrorDto;
 import uz.pdp.market.dto.response.DataDto;
 import uz.pdp.market.entity.market.Market;
+import uz.pdp.market.exception.exceptions.NotFoundException;
 import uz.pdp.market.mapper.MarketMapper;
 import uz.pdp.market.repository.MarketRepository;
 import uz.pdp.market.service.AbstractService;
@@ -37,11 +37,7 @@ public class MarketService extends AbstractService<MarketRepository, MarketMappe
     public ResponseEntity<DataDto<Boolean>> delete(Long id) {
         Optional<Market> optionalMarket = repository.findByIdAndDeletedFalse(id);
         if (optionalMarket.isEmpty()) {
-            return new ResponseEntity<>(new DataDto<>(AppErrorDto
-                    .builder()
-                    .status(HttpStatus.NOT_FOUND)
-                    .build()
-            ), HttpStatus.NOT_FOUND);
+            throw new NotFoundException("Not found");
         }
         return new ResponseEntity<>(new DataDto<>(true), HttpStatus.NO_CONTENT);
     }
@@ -50,12 +46,7 @@ public class MarketService extends AbstractService<MarketRepository, MarketMappe
     public ResponseEntity<DataDto<Boolean>> update(MarketUpdateDto updateDto) {
         Optional<Market> marketOptional = repository.findByIdAndDeletedFalse(updateDto.getId());
         if (marketOptional.isEmpty()) {
-            return new ResponseEntity<>(new DataDto<>(AppErrorDto
-                    .builder()
-                    .status(HttpStatus.NOT_FOUND)
-                    .message("Market not found by id : '%s'".formatted(updateDto.getId()))
-                    .build()
-            ), HttpStatus.CONFLICT);
+            throw new NotFoundException("Market not found by id : '%s'".formatted(updateDto.getId()));
         }
         Market market = mapper.fromUpdateDto(updateDto, marketOptional.get());
         repository.save(market);
@@ -72,7 +63,7 @@ public class MarketService extends AbstractService<MarketRepository, MarketMappe
     public ResponseEntity<DataDto<MarketDto>> get(Long id) {
         Optional<Market> marketOptional = repository.findByIdAndDeletedFalse(id);
         if (marketOptional.isEmpty())
-            return new ResponseEntity<>(new DataDto<>(AppErrorDto.builder().build()), HttpStatus.NOT_FOUND);
+            throw new NotFoundException("not found");
 
         return new ResponseEntity<>(new DataDto<>(mapper.toDto(marketOptional.get())), HttpStatus.OK);
     }

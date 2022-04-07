@@ -7,9 +7,9 @@ import uz.pdp.market.criteria.GenericCriteria;
 import uz.pdp.market.dto.currency.CurrencyCreateDto;
 import uz.pdp.market.dto.currency.CurrencyDto;
 import uz.pdp.market.dto.currency.CurrencyUpdateDto;
-import uz.pdp.market.dto.response.AppErrorDto;
 import uz.pdp.market.dto.response.DataDto;
 import uz.pdp.market.entity.market.Currency;
+import uz.pdp.market.exception.exceptions.NotFoundException;
 import uz.pdp.market.mapper.CurrencyMapper;
 import uz.pdp.market.repository.CurrencyRepository;
 import uz.pdp.market.service.AbstractService;
@@ -39,11 +39,7 @@ public class CurrencyService extends AbstractService<CurrencyRepository, Currenc
     public ResponseEntity<DataDto<Boolean>> delete(Long id) {
         Optional<Currency> optionalCurrency = repository.findByIdAndDeletedFalse(id);
         if (optionalCurrency.isEmpty())
-            return new ResponseEntity<>(new DataDto<>(AppErrorDto
-                    .builder()
-                    .status(HttpStatus.NOT_FOUND)
-                    .build()
-            ), HttpStatus.NOT_FOUND);
+            throw new NotFoundException("Currency not found by id : '%s'".formatted(id));
         repository.softDelete("" + optionalCurrency.get().getId());
         return new ResponseEntity<>(new DataDto<>(true), HttpStatus.NO_CONTENT);
     }
@@ -52,12 +48,7 @@ public class CurrencyService extends AbstractService<CurrencyRepository, Currenc
     public ResponseEntity<DataDto<Boolean>> update(CurrencyUpdateDto updateDto) {
         Optional<Currency> categoryOptional = repository.findByIdAndDeletedFalse(updateDto.getId());
         if (categoryOptional.isEmpty()) {
-            return new ResponseEntity<>(new DataDto<>(AppErrorDto
-                    .builder()
-                    .status(HttpStatus.NOT_FOUND)
-                    .message("Currency not found by id : '%s'".formatted(updateDto.getId()))
-                    .build()
-            ), HttpStatus.CONFLICT);
+            throw new NotFoundException("Currency not found by id : '%s'".formatted(updateDto.getId()));
         }
 
         Currency currency = mapper.fromUpdateDto(updateDto, categoryOptional.get());
@@ -76,7 +67,7 @@ public class CurrencyService extends AbstractService<CurrencyRepository, Currenc
     public ResponseEntity<DataDto<CurrencyDto>> get(Long id) {
         Optional<Currency> currencyOptional = repository.findByIdAndDeletedFalse(id);
         if (currencyOptional.isEmpty())
-            return new ResponseEntity<>(new DataDto<>(AppErrorDto.builder().build()), HttpStatus.NOT_FOUND);
+            throw new NotFoundException("Currency not found by id : '%s'".formatted(id));
 
         return new ResponseEntity<>(new DataDto<>(mapper.toDto(currencyOptional.get())), HttpStatus.OK);
     }

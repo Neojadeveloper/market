@@ -7,9 +7,9 @@ import uz.pdp.market.criteria.GenericCriteria;
 import uz.pdp.market.dto.orderList.OrderListCreateDto;
 import uz.pdp.market.dto.orderList.OrderListDto;
 import uz.pdp.market.dto.orderList.OrderListUpdateDto;
-import uz.pdp.market.dto.response.AppErrorDto;
 import uz.pdp.market.dto.response.DataDto;
 import uz.pdp.market.entity.market.OrderList;
+import uz.pdp.market.exception.exceptions.NotFoundException;
 import uz.pdp.market.mapper.OrderListMapper;
 import uz.pdp.market.repository.AuthUserRepository;
 import uz.pdp.market.repository.CategoryRepository;
@@ -53,11 +53,7 @@ public class OrderListService extends AbstractService<OrderListRepository, Order
     public ResponseEntity<DataDto<Boolean>> delete(Long id) {
         Optional<OrderList> optionalOrderList = repository.findByIdAndDeletedFalse(id);
         if (optionalOrderList.isEmpty()) {
-            return new ResponseEntity<>(new DataDto<>(AppErrorDto
-                    .builder()
-                    .status(HttpStatus.NOT_FOUND)
-                    .build()
-            ), HttpStatus.NOT_FOUND);
+            throw new NotFoundException("Not found");
         }
         return new ResponseEntity<>(new DataDto<>(true), HttpStatus.NO_CONTENT);
     }
@@ -66,12 +62,7 @@ public class OrderListService extends AbstractService<OrderListRepository, Order
     public ResponseEntity<DataDto<Boolean>> update(OrderListUpdateDto updateDto) {
         Optional<OrderList> orderListOptional = repository.findByIdAndDeletedFalse(updateDto.getId());
         if (orderListOptional.isEmpty()) {
-            return new ResponseEntity<>(new DataDto<>(AppErrorDto
-                    .builder()
-                    .status(HttpStatus.NOT_FOUND)
-                    .message("OrderList not found by id : '%s'".formatted(updateDto.getId()))
-                    .build()
-            ), HttpStatus.CONFLICT);
+            throw new NotFoundException("OrderList not found by id : '%s'".formatted(updateDto.getId()));
         }
         OrderList orderList = mapper.fromUpdateDto(updateDto, orderListOptional.get());
         repository.save(orderList);
@@ -88,7 +79,7 @@ public class OrderListService extends AbstractService<OrderListRepository, Order
     public ResponseEntity<DataDto<OrderListDto>> get(Long id) {
         Optional<OrderList> orderListOptional = repository.findByIdAndDeletedFalse(id);
         if (orderListOptional.isEmpty())
-            return new ResponseEntity<>(new DataDto<>(AppErrorDto.builder().build()), HttpStatus.NOT_FOUND);
+            throw new NotFoundException("Not found");
 
         return new ResponseEntity<>(new DataDto<>(mapper.toDto(orderListOptional.get())), HttpStatus.OK);
     }

@@ -7,9 +7,9 @@ import uz.pdp.market.criteria.GenericCriteria;
 import uz.pdp.market.dto.category.CategoryCreateDto;
 import uz.pdp.market.dto.category.CategoryDto;
 import uz.pdp.market.dto.category.CategoryUpdateDto;
-import uz.pdp.market.dto.response.AppErrorDto;
 import uz.pdp.market.dto.response.DataDto;
 import uz.pdp.market.entity.market.Category;
+import uz.pdp.market.exception.exceptions.NotFoundException;
 import uz.pdp.market.mapper.CategoryMapper;
 import uz.pdp.market.repository.CategoryRepository;
 import uz.pdp.market.service.AbstractService;
@@ -38,12 +38,7 @@ public class CategoryService extends AbstractService<CategoryRepository, Categor
     @Override
     public ResponseEntity<DataDto<Boolean>> delete(Long id) {
         Optional<Category> optionalCategory = repository.findByIdAndDeletedFalse(id);
-        if (optionalCategory.isEmpty())
-            return new ResponseEntity<>(new DataDto<>(AppErrorDto
-                    .builder()
-                    .status(HttpStatus.NOT_FOUND)
-                    .build()
-            ), HttpStatus.NOT_FOUND);
+        if (optionalCategory.isEmpty()) throw new NotFoundException("Category not found by id : '%s'".formatted(id));
         repository.delete(optionalCategory.get());
         return new ResponseEntity<>(new DataDto<>(true), HttpStatus.NO_CONTENT);
     }
@@ -52,12 +47,7 @@ public class CategoryService extends AbstractService<CategoryRepository, Categor
     public ResponseEntity<DataDto<Boolean>> update(CategoryUpdateDto updateDto) {
         Optional<Category> categoryOptional = repository.findByIdAndDeletedFalse(updateDto.getId());
         if (categoryOptional.isEmpty()) {
-            return new ResponseEntity<>(new DataDto<>(AppErrorDto
-                    .builder()
-                    .status(HttpStatus.NOT_FOUND)
-                    .message("Category not found by id : '%s'".formatted(updateDto.getId()))
-                    .build()
-            ), HttpStatus.CONFLICT);
+            throw new NotFoundException("Category not found by id : '%s'".formatted(updateDto.getId()));
         }
 
         Category category = mapper.fromUpdateDto(updateDto, categoryOptional.get());
@@ -75,8 +65,7 @@ public class CategoryService extends AbstractService<CategoryRepository, Categor
     @Override
     public ResponseEntity<DataDto<CategoryDto>> get(Long id) {
         Optional<Category> categoryOptional = repository.findByIdAndDeletedFalse(id);
-        if (categoryOptional.isEmpty())
-            return new ResponseEntity<>(new DataDto<>(AppErrorDto.builder().build()), HttpStatus.NOT_FOUND);
+        if (categoryOptional.isEmpty()) throw new NotFoundException("Category not found by id : '%s'".formatted(id));
 
         return new ResponseEntity<>(new DataDto<>(mapper.toDto(categoryOptional.get())), HttpStatus.OK);
     }

@@ -10,9 +10,9 @@ import uz.pdp.market.dto.filter.FilterDto;
 import uz.pdp.market.dto.income.IncomeCreateDto;
 import uz.pdp.market.dto.income.IncomeDto;
 import uz.pdp.market.dto.income.IncomeUpdateDto;
-import uz.pdp.market.dto.response.AppErrorDto;
 import uz.pdp.market.dto.response.DataDto;
 import uz.pdp.market.entity.market.Income;
+import uz.pdp.market.exception.exceptions.NotFoundException;
 import uz.pdp.market.mapper.IncomeMapper;
 import uz.pdp.market.repository.IncomeRepository;
 import uz.pdp.market.service.AbstractService;
@@ -60,12 +60,7 @@ public class IncomeService extends AbstractService<
     public ResponseEntity<DataDto<Boolean>> update(IncomeUpdateDto updateDto) {
         Optional<Income> optionalIncome = repository.findByIdAndDeletedFalse(updateDto.getId());
         if (optionalIncome.isEmpty()) {
-            return new ResponseEntity<>(new DataDto<>(AppErrorDto
-                    .builder()
-                    .status(HttpStatus.NOT_FOUND)
-                    .message("OutputProduct not found by id : '%s'".formatted(updateDto.getId()))
-                    .build()
-            ), HttpStatus.CONFLICT);
+            throw new NotFoundException("Income not found by id : '%s'".formatted(updateDto.getId()));
         }
 
         Income income = mapper.fromUpdateDto(updateDto, optionalIncome.get());
@@ -119,7 +114,7 @@ public class IncomeService extends AbstractService<
     public ResponseEntity<DataDto<List<IncomeDto>>> getMonthly(FilterDto filterDto) {
         List<Income> incomeMonthly = new ArrayList<>();
         for (Income income : repository.findAllByDeletedFalse()) {
-            if (income.getCreatedAt().getDayOfMonth()==filterDto.getDate().getDayOfMonth())
+            if (income.getCreatedAt().getDayOfMonth() == filterDto.getDate().getDayOfMonth())
                 incomeMonthly.add(income);
         }
         List<IncomeDto> incomeDtos = mapper.toDto(incomeMonthly);
@@ -130,7 +125,7 @@ public class IncomeService extends AbstractService<
     public ResponseEntity<DataDto<List<IncomeDto>>> getYearly(FilterDto filterDto) {
         List<Income> incomeYearly = new ArrayList<>();
         for (Income income : repository.findAllByDeletedFalse()) {
-            if (income.getCreatedAt().getYear()==filterDto.getDate().getYear())
+            if (income.getCreatedAt().getYear() == filterDto.getDate().getYear())
                 incomeYearly.add(income);
         }
         List<IncomeDto> incomeDtos = mapper.toDto(incomeYearly);

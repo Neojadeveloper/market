@@ -7,12 +7,12 @@ import uz.pdp.market.criteria.OutputProductCriteria;
 import uz.pdp.market.dto.outputProduct.OutputProductCreateDto;
 import uz.pdp.market.dto.outputProduct.OutputProductDto;
 import uz.pdp.market.dto.outputProduct.OutputProductUpdateDto;
-import uz.pdp.market.dto.response.AppErrorDto;
 import uz.pdp.market.dto.response.DataDto;
 import uz.pdp.market.entity.market.Currency;
 import uz.pdp.market.entity.market.InputProduct;
 import uz.pdp.market.entity.market.Measurement;
 import uz.pdp.market.entity.market.OutputProduct;
+import uz.pdp.market.exception.exceptions.NotFoundException;
 import uz.pdp.market.mapper.OutputProductMapper;
 import uz.pdp.market.repository.OutputProductRepository;
 import uz.pdp.market.service.AbstractService;
@@ -78,12 +78,7 @@ public class OutputProductService extends AbstractService<
     public ResponseEntity<DataDto<Boolean>> update(OutputProductUpdateDto updateDto) {
         Optional<OutputProduct> outputProductOptional = repository.findByIdAndDeletedFalse(updateDto.getId());
         if (outputProductOptional.isEmpty()) {
-            return new ResponseEntity<>(new DataDto<>(AppErrorDto
-                    .builder()
-                    .status(HttpStatus.NOT_FOUND)
-                    .message("OutputProduct not found by id : '%s'".formatted(updateDto.getId()))
-                    .build()
-            ), HttpStatus.CONFLICT);
+            throw new NotFoundException("OutputProduct not found by id : '%s'".formatted(updateDto.getId()));
         }
 
         OutputProduct outputProduct = mapper.fromUpdateDto(updateDto, outputProductOptional.get());

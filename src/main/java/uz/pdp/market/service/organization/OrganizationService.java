@@ -8,9 +8,9 @@ import uz.pdp.market.criteria.OrganizationCriteria;
 import uz.pdp.market.dto.organization.OrganizationCreateDto;
 import uz.pdp.market.dto.organization.OrganizationDto;
 import uz.pdp.market.dto.organization.OrganizationUpdateDto;
-import uz.pdp.market.dto.response.AppErrorDto;
 import uz.pdp.market.dto.response.DataDto;
 import uz.pdp.market.entity.organization.Organization;
+import uz.pdp.market.exception.exceptions.NotFoundException;
 import uz.pdp.market.mapper.OrganizationMapper;
 import uz.pdp.market.repository.OrganizationRepository;
 import uz.pdp.market.service.AbstractService;
@@ -53,12 +53,7 @@ public class OrganizationService extends AbstractService<
     public ResponseEntity<DataDto<Boolean>> update(OrganizationUpdateDto updateDto) {
         Optional<Organization> organizationOptional = repository.findByIdAndDeletedFalse(updateDto.getId());
         if (organizationOptional.isEmpty()) {
-            return new ResponseEntity<>(new DataDto<>(AppErrorDto
-                    .builder()
-                    .status(HttpStatus.NOT_FOUND)
-                    .message("Organization not found by id : '%s'".formatted(updateDto.getId()))
-                    .build()
-            ), HttpStatus.CONFLICT);
+            throw new NotFoundException("Organization not found by id : '%s'".formatted(updateDto.getId()));
         }
 
         Organization organization = mapper.fromUpdateDto(updateDto, organizationOptional.get());

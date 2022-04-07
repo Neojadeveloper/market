@@ -14,8 +14,8 @@ public interface AuthUserRepository extends JpaRepository<AuthUser, Long>, Abstr
     @Query(value = "from AuthUser a where a.chatId=:id")
     AuthUser findByChatId(@Param("id") String id);
 
-    @Transactional
     @Modifying
+    @Transactional
     @Query("update AuthUser u set u.state=:state where u.chatId=:chatId")
     void changeStatus(@Param("chatId") String chatId, @Param("state") String state);
 

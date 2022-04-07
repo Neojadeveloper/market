@@ -7,12 +7,12 @@ import uz.pdp.market.criteria.GenericCriteria;
 import uz.pdp.market.dto.debtList.DebtListCreateDto;
 import uz.pdp.market.dto.debtList.DebtListDto;
 import uz.pdp.market.dto.debtList.DebtListUpdateDto;
-import uz.pdp.market.dto.response.AppErrorDto;
 import uz.pdp.market.dto.response.DataDto;
 import uz.pdp.market.entity.auth.AuthUser;
 import uz.pdp.market.entity.market.Currency;
 import uz.pdp.market.entity.market.DebtList;
 import uz.pdp.market.entity.market.Measurement;
+import uz.pdp.market.exception.exceptions.NotFoundException;
 import uz.pdp.market.mapper.DebtListMapper;
 import uz.pdp.market.repository.DebtListRepository;
 import uz.pdp.market.service.AbstractService;
@@ -55,11 +55,7 @@ public class DebtListService extends AbstractService<DebtListRepository, DebtLis
     public ResponseEntity<DataDto<Boolean>> delete(Long id) {
         Optional<DebtList> optionalDebtList = repository.findByIdAndDeletedFalse(id);
         if (optionalDebtList.isEmpty()) {
-            return new ResponseEntity<>(new DataDto<>(AppErrorDto
-                    .builder()
-                    .status(HttpStatus.NOT_FOUND)
-                    .build()
-            ), HttpStatus.NOT_FOUND);
+            throw new NotFoundException("Not found");
         }
         return new ResponseEntity<>(new DataDto<>(true), HttpStatus.NO_CONTENT);
     }
@@ -68,12 +64,7 @@ public class DebtListService extends AbstractService<DebtListRepository, DebtLis
     public ResponseEntity<DataDto<Boolean>> update(DebtListUpdateDto updateDto) {
         Optional<DebtList> debtListOptional = repository.findByIdAndDeletedFalse(updateDto.getId());
         if (debtListOptional.isEmpty()) {
-            return new ResponseEntity<>(new DataDto<>(AppErrorDto
-                    .builder()
-                    .status(HttpStatus.NOT_FOUND)
-                    .message("DebtList not found by id : '%s'".formatted(updateDto.getId()))
-                    .build()
-            ), HttpStatus.CONFLICT);
+            throw new NotFoundException("DebtList not found by id : '%s'".formatted(updateDto.getId()));
         }
         DebtList debtList = mapper.fromUpdateDto(updateDto, debtListOptional.get());
 
@@ -106,7 +97,7 @@ public class DebtListService extends AbstractService<DebtListRepository, DebtLis
     public ResponseEntity<DataDto<DebtListDto>> get(Long id) {
         Optional<DebtList> debtListOptional = repository.findByIdAndDeletedFalse(id);
         if (debtListOptional.isEmpty())
-            return new ResponseEntity<>(new DataDto<>(AppErrorDto.builder().build()), HttpStatus.NOT_FOUND);
+            throw new NotFoundException("DebtList not found by id : '%s'".formatted(id));
 
         return new ResponseEntity<>(new DataDto<>(mapper.toDto(debtListOptional.get())), HttpStatus.OK);
     }

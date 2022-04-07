@@ -7,9 +7,9 @@ import uz.pdp.market.criteria.GenericCriteria;
 import uz.pdp.market.dto.measurement.MeasurementCreateDto;
 import uz.pdp.market.dto.measurement.MeasurementDto;
 import uz.pdp.market.dto.measurement.MeasurementUpdateDto;
-import uz.pdp.market.dto.response.AppErrorDto;
 import uz.pdp.market.dto.response.DataDto;
 import uz.pdp.market.entity.market.Measurement;
+import uz.pdp.market.exception.exceptions.NotFoundException;
 import uz.pdp.market.mapper.MeasurementMapper;
 import uz.pdp.market.repository.MeasurementRepository;
 import uz.pdp.market.service.AbstractService;
@@ -37,11 +37,7 @@ public class MeasurementService extends AbstractService<MeasurementRepository, M
     public ResponseEntity<DataDto<Boolean>> delete(Long id) {
         Optional<Measurement> optionalMeasurement = repository.findByIdAndDeletedFalse(id);
         if (optionalMeasurement.isEmpty()) {
-            return new ResponseEntity<>(new DataDto<>(AppErrorDto
-                    .builder()
-                    .status(HttpStatus.NOT_FOUND)
-                    .build()
-            ), HttpStatus.NOT_FOUND);
+            throw new NotFoundException("Not found");
         }
         return new ResponseEntity<>(new DataDto<>(true), HttpStatus.NO_CONTENT);
     }
@@ -50,12 +46,7 @@ public class MeasurementService extends AbstractService<MeasurementRepository, M
     public ResponseEntity<DataDto<Boolean>> update(MeasurementUpdateDto updateDto) {
         Optional<Measurement> measurementOptional = repository.findByIdAndDeletedFalse(updateDto.getId());
         if (measurementOptional.isEmpty()) {
-            return new ResponseEntity<>(new DataDto<>(AppErrorDto
-                    .builder()
-                    .status(HttpStatus.NOT_FOUND)
-                    .message("Measurement not found by id : '%s'".formatted(updateDto.getId()))
-                    .build()
-            ), HttpStatus.CONFLICT);
+            throw new NotFoundException("Measurement not found by id : '%s'".formatted(updateDto.getId()));
         }
         Measurement measurement = mapper.fromUpdateDto(updateDto, measurementOptional.get());
         repository.save(measurement);
@@ -72,7 +63,7 @@ public class MeasurementService extends AbstractService<MeasurementRepository, M
     public ResponseEntity<DataDto<MeasurementDto>> get(Long id) {
         Optional<Measurement> measurementOptional = repository.findByIdAndDeletedFalse(id);
         if (measurementOptional.isEmpty())
-            return new ResponseEntity<>(new DataDto<>(AppErrorDto.builder().build()), HttpStatus.NOT_FOUND);
+           throw new NotFoundException("Not found");
 
         return new ResponseEntity<>(new DataDto<>(mapper.toDto(measurementOptional.get())), HttpStatus.OK);
     }
